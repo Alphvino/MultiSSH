@@ -1,22 +1,16 @@
 import paramiko
+
+shells_number = int(input("Enter the number of shells you are going to create: "))
 commandtoexecute = input("Enter the command to execute: ")
-# Initializing 2 ssh connections
-ssh1 = paramiko.SSHClient()
-ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh1.connect("IP1", port=22, username="USERNAME", password="PASSWORD")
 
-ssh2 = paramiko.SSHClient()
-ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh2.connect("IP2", port=22, username="USERNAME", password="PASSWORD")
-
-ssh1_stdin, ssh_stdout, ssh_stderr = ssh1.exec_command(commandtoexecute)
-ssh2_stdin, ssh2_stdout, ssh2_stderr = ssh2.exec_command(commandtoexecute)
-
-output1 = ssh_stdout.read().decode('ascii').strip("\n")
-output2 = ssh2_stdout.read().decode('ascii').strip("\n")
-
-print("Output of server 1")
-print(output1)
-
-print("Output of server 2")
-print(output2)
+for i in range(shells_number):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    shellip = input("Enter the shell IP: ")
+    shellport = input("Enter the shell port: ")
+    username = input(f"Enter the username of the shell with IP {shellip}: ")
+    password = input(f"Enter the password of the shell with IP {shellip}: ")
+    ssh.connect(shellip, port=shellport, username=username, password=password)
+    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(commandtoexecute)
+    ssh_output = ssh_stdout.read().decode("ascii").strip("\n")
+    print(f"Received output from {shellip}: {ssh_output}")
